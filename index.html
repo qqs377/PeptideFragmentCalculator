@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Peptide Fragment Mass Calculator</title>
+
+<link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Peptide Fragment Mass Calculator</h1>
+
+
+<section class="card">
+
+<h2>Peptide Sequence</h2>
+
+<label>
+Enter peptide sequence:
+</label>
+
+<input 
+    type="text" 
+    id="peptideSequence"
+    placeholder="Example: ACDEFGHIK"
+>
+
+<p>
+Supported localized modifications:
+<br>
+Example:
+<code>M(+15.9949)PEPTIDE</code>
+or
+<code>K[+42.0106]</code>
+</p>
+
+</section>
+
+
+
+<section class="card">
+
+<h2>Precursor Calculation</h2>
+
+<div class="two-column">
+
+<div>
+<label>
+Minimum precursor charge:
+</label>
+
+<input 
+type="number"
+id="precursorChargeMin"
+value="1"
+min="1">
+</div>
+
+
+<div>
+<label>
+Maximum precursor charge:
+</label>
+
+<input 
+type="number"
+id="precursorChargeMax"
+value="3"
+min="1">
+</div>
+
+</div>
+
+</section>
+
+
+
+<section class="card">
+
+<h2>Fragment Type</h2>
+
+
+<label>
+<input 
+type="radio"
+name="fragmentMode"
+value="CID"
+checked>
+CID/HCD
+</label>
+
+
+<label>
+<input 
+type="radio"
+name="fragmentMode"
+value="ETD">
+ETD
+</label>
+
+
+<br><br>
+
+
+<div id="cidOptions">
+
+
+<h3>CID/HCD ions</h3>
+
+<label>
+<input 
+type="checkbox"
+class="fragmentIon"
+value="b"
+checked>
+b ions
+</label>
+
+
+<label>
+<input 
+type="checkbox"
+class="fragmentIon"
+value="y"
+checked>
+y ions
+</label>
+
+
+<label>
+<input 
+type="checkbox"
+class="fragmentIon"
+value="a">
+a ions
+</label>
+
+
+</div>
+
+
+
+<div id="etdOptions" style="display:none">
+
+
+<h3>ETD ions</h3>
+
+
+<label>
+<input 
+type="checkbox"
+class="fragmentIon"
+value="c">
+c ions
+</label>
+
+
+<label>
+<input 
+type="checkbox"
+class="fragmentIon"
+value="z">
+z ions
+</label>
+
+
+<label>
+<input 
+type="checkbox"
+class="fragmentIon"
+value="a">
+a ions
+</label>
+
+
+</div>
+
+
+</section>
+
+
+
+
+
+<section class="card">
+
+<h2>Fragment Charge Range</h2>
+
+
+<div class="two-column">
+
+
+<div>
+
+<label>
+Minimum fragment charge:
+</label>
+
+<input
+type="number"
+id="fragmentChargeMin"
+value="1"
+min="1">
+
+</div>
+
+
+
+<div>
+
+<label>
+Maximum fragment charge:
+</label>
+
+<input
+type="number"
+id="fragmentChargeMax"
+value="2"
+min="1">
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+
+
+<section class="card">
+
+
+<h2>Mass Type</h2>
+
+
+<label>
+
+<input 
+type="radio"
+name="massType"
+value="mono"
+checked>
+
+Monoisotopic Mass
+
+</label>
+
+
+<label>
+
+<input 
+type="radio"
+name="massType"
+value="average">
+
+Average Mass
+
+</label>
+
+
+<p>
+Note: Average mass is applied only to fragment ions with charge ≥2.
+Charge +1 fragments remain monoisotopic.
+</p>
+
+
+</section>
+
+
+
+
+
+
+<section class="card">
+
+
+<h2>Static Modifications</h2>
+
+
+<p>
+Select modifications applied to all matching residues:
+</p>
+
+
+<div id="staticModificationList"></div>
+
+
+
+<h3>Add Custom Static Modification</h3>
+
+
+<div class="two-column">
+
+
+<input 
+id="customModName"
+placeholder="Modification name">
+
+
+<input 
+id="customModMass"
+placeholder="Mass shift">
+
+
+<input 
+id="customModResidue"
+placeholder="Residue (A,C,K or N-term)">
+
+
+</div>
+
+
+<button id="addCustomModification">
+Add Modification
+</button>
+
+
+</section>
+
+
+
+
+
+
+
+<section class="card">
+
+
+<button 
+id="calculateButton"
+class="calculate">
+
+Calculate
+
+</button>
+
+
+</section>
+
+
+
+
+
+
+
+<section class="card">
+
+
+<h2>Precursor Mass</h2>
+
+
+<h3 id="displaySequence"></h3>
+
+
+<table id="precursorTable">
+
+<thead>
+
+<tr>
+
+<th>Charge State</th>
+
+<th>Monoisotopic Mass</th>
+
+<th>Average Mass</th>
+
+</tr>
+
+</thead>
+
+
+<tbody></tbody>
+
+
+</table>
+
+
+</section>
+
+
+
+
+
+
+
+
+<section class="card">
+
+
+<h2>Fragment Masses</h2>
+
+
+<div id="fragmentTableContainer"></div>
+
+
+</section>
+
+
+
+
+
+
+
+<section class="card">
+
+
+<h2>Export</h2>
+
+
+<button id="printButton">
+Print
+</button>
+
+
+<button id="csvButton">
+Export CSV
+</button>
+
+
+<button id="excelButton">
+Export Excel
+</button>
+
+
+</section>
+
+
+
+</div>
+
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
