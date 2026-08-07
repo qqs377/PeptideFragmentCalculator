@@ -1,447 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Peptide Fragment Mass Calculator</title>
-
-<link rel="stylesheet" href="style.css">
-
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Peptide Fragment Calculator</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
-
 <body>
-
-<div class="container">
-
-<h1>Peptide Fragment Mass Calculator</h1>
-
-
-<section class="card">
-
-<h2>Peptide Sequence</h2>
-
-<label>
-Enter peptide sequence:
-</label>
-
-<input 
-    type="text" 
-    id="peptideSequence"
-    placeholder="Example: ACDEFGHIK"
->
-
-<p>
-Supported localized modifications:
-<br>
-Example:
-<code>M(+15.9949)PEPTIDE</code>
-or
-<code>K[+42.0106]</code>
-</p>
-
-</section>
-
-
-
-<section class="card">
-
-<h2>Precursor Calculation</h2>
-
-<div class="two-column">
-
-<div>
-<label>
-Minimum precursor charge:
-</label>
-
-<input 
-type="number"
-id="precursorChargeMin"
-value="1"
-min="1">
-</div>
-
-
-<div>
-<label>
-Maximum precursor charge:
-</label>
-
-<input 
-type="number"
-id="precursorChargeMax"
-value="3"
-min="1">
-</div>
-
-</div>
-
-</section>
-
-
-
-<section class="card">
-
-<h2>Fragment Type</h2>
-
-
-<label>
-<input 
-type="radio"
-name="fragmentMode"
-value="CID"
-checked>
-CID/HCD
-</label>
-
-
-<label>
-<input 
-type="radio"
-name="fragmentMode"
-value="ETD">
-ETD
-</label>
-
-
-<br><br>
-
-
-<div id="cidOptions">
-
-
-<h3>CID/HCD ions</h3>
-
-<label>
-<input 
-type="checkbox"
-class="fragmentIon"
-value="b"
-checked>
-b ions
-</label>
-
-
-<label>
-<input 
-type="checkbox"
-class="fragmentIon"
-value="y"
-checked>
-y ions
-</label>
-
-
-<label>
-<input 
-type="checkbox"
-class="fragmentIon"
-value="a">
-a ions
-</label>
-
-
-</div>
-
-
-
-<div id="etdOptions" style="display:none">
-
-
-<h3>ETD ions</h3>
-
-
-<label>
-<input 
-type="checkbox"
-class="fragmentIon"
-value="c">
-c ions
-</label>
-
-
-<label>
-<input 
-type="checkbox"
-class="fragmentIon"
-value="z">
-z ions
-</label>
-
-
-<label>
-<input 
-type="checkbox"
-class="fragmentIon"
-value="a">
-a ions
-</label>
-
-
-</div>
-
-
-</section>
-
-
-
-
-
-<section class="card">
-
-<h2>Fragment Charge Range</h2>
-
-
-<div class="two-column">
-
-
-<div>
-
-<label>
-Minimum fragment charge:
-</label>
-
-<input
-type="number"
-id="fragmentChargeMin"
-value="1"
-min="1">
-
-</div>
-
-
-
-<div>
-
-<label>
-Maximum fragment charge:
-</label>
-
-<input
-type="number"
-id="fragmentChargeMax"
-value="2"
-min="1">
-
-</div>
-
-
-</div>
-
-</section>
-
-
-
-
-
-<section class="card">
-
-
-<h2>Mass Type</h2>
-
-
-<label>
-
-<input 
-type="radio"
-name="massType"
-value="mono"
-checked>
-
-Monoisotopic Mass
-
-</label>
-
-
-<label>
-
-<input 
-type="radio"
-name="massType"
-value="average">
-
-Average Mass
-
-</label>
-
-
-<p>
-Note: Average mass is applied only to fragment ions with charge ≥2.
-Charge +1 fragments remain monoisotopic.
-</p>
-
-
-</section>
-
-
-
-
-
-
-<section class="card">
-
-
-<h2>Static Modifications</h2>
-
-
-<p>
-Select modifications applied to all matching residues:
-</p>
-
-
-<div id="staticModificationList"></div>
-
-
-
-<h3>Add Custom Static Modification</h3>
-
-
-<div class="two-column">
-
-
-<input 
-id="customModName"
-placeholder="Modification name">
-
-
-<input 
-id="customModMass"
-placeholder="Mass shift">
-
-
-<input 
-id="customModResidue"
-placeholder="Residue (A,C,K or N-term)">
-
-
-</div>
-
-
-<button id="addCustomModification">
-Add Modification
-</button>
-
-
-</section>
-
-
-
-
-
-
-
-<section class="card">
-
-
-<button 
-id="calculateButton"
-class="calculate">
-
-Calculate
-
-</button>
-
-
-</section>
-
-
-
-
-
-
-
-<section class="card">
-
-
-<h2>Precursor Mass</h2>
-
-
-<h3 id="displaySequence"></h3>
-
-
-<table id="precursorTable">
-
-<thead>
-
-<tr>
-
-<th>Charge State</th>
-
-<th>Monoisotopic Mass</th>
-
-<th>Average Mass</th>
-
-</tr>
-
-</thead>
-
-
-<tbody></tbody>
-
-
-</table>
-
-
-</section>
-
-
-
-
-
-
-
-
-<section class="card">
-
-
-<h2>Fragment Masses</h2>
-
-
-<div id="fragmentTableContainer"></div>
-
-
-</section>
-
-
-
-
-
-
-
-<section class="card">
-
-
-<h2>Export</h2>
-
-
-<button id="printButton">
-Print
-</button>
-
-
-<button id="csvButton">
-Export CSV
-</button>
-
-
-<button id="excelButton">
-Export Excel
-</button>
-
-
-</section>
-
-
-
-</div>
-
-
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="script.js"></script>
-
+  <div class="app-container">
+    <header>
+      <h1>🧬 Peptide Fragment Calculator</h1>
+      <p class="subtitle">Inspired by 
+        <a href="https://osf.io/xrg3q/overview" target="_blank" rel="noopener noreferrer">
+    Hunt Lab Peptide Fragment Calculator
+        </a></p>
+       <p class="subtitle"> For questions, please contact Qianqian Shao (qianqian.shao@yale.edu) </p>
+    </header>
+
+    <main>
+      <!-- INPUT PANEL -->
+      <section class="panel" id="input-panel">
+
+        <!-- Peptide Sequence -->
+        <div class="form-group">
+          <label for="peptide-input">Peptide Sequence
+            <span class="hint">(single-letter codes; inline mods e.g. <code>K[+42.0106]</code>)</span>
+          </label>
+          <input type="text" id="peptide-input" placeholder="e.g. ACDEFGHIK or K[+42.0106]PEPTIDE" autocomplete="off" spellcheck="false"/>
+        </div>
+
+        <div class="form-row">
+
+          <!-- Precursor Charge Range -->
+          <div class="form-group half">
+            <label>Precursor Charge Range</label>
+            <div class="range-row">
+              <input type="number" id="precursor-min" value="1" min="1" max="20"/>
+              <span>to</span>
+              <input type="number" id="precursor-max" value="3" min="1" max="20"/>
+            </div>
+          </div>
+
+          <!-- Fragment Charge Range -->
+          <div class="form-group half">
+            <label>Fragment Charge Range</label>
+            <div class="range-row">
+              <input type="number" id="fragment-min" value="1" min="1" max="10"/>
+              <span>to</span>
+              <input type="number" id="fragment-max" value="2" min="1" max="10"/>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="form-row">
+
+          <!-- Fragment Ion Types -->
+          <div class="form-group half">
+            <label>Fragment Ion Types</label>
+            <div class="ion-group">
+              <span class="ion-label">CID/HCD:</span>
+              <label class="check-label b-color"><input type="checkbox" id="ion-b" checked/> b</label>
+              <label class="check-label y-color"><input type="checkbox" id="ion-y" checked/> y</label>
+              <label class="check-label a-color"><input type="checkbox" id="ion-a"/> a</label>
+            </div>
+            <div class="ion-group">
+              <span class="ion-label">ETD:</span>
+              <label class="check-label c-color"><input type="checkbox" id="ion-c"/> c</label>
+              <label class="check-label z-color"><input type="checkbox" id="ion-z"/> z</label>
+            </div>
+          </div>
+
+          <!-- Mass Type -->
+          <div class="form-group half">
+            <label>Mass Type</label>
+            <div class="radio-group">
+              <label class="check-label"><input type="radio" name="mass-type" value="mono" checked/> Monoisotopic</label>
+              <label class="check-label"><input type="radio" name="mass-type" value="average"/> Average <span class="hint">(≥+2 frags only)</span></label>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Static Modifications -->
+        <div class="form-group">
+          <label>Static Modifications <span class="hint">(applied to all matching residues)</span></label>
+          <div class="mod-grid" id="static-mods-container">
+            <!-- populated by JS -->
+          </div>
+        </div>
+
+        <!-- Custom Modification -->
+        <div class="form-group">
+          <label>Add Custom Static Modification</label>
+          <div class="custom-mod-row">
+            <input type="text" id="custom-mod-name" placeholder="Name (e.g. MyMod on X)"/>
+            <input type="text" id="custom-mod-target" placeholder="Target (AA letter, nterm, cterm)"/>
+            <input type="number" id="custom-mod-mass" placeholder="Mass shift (Da)" step="0.0001"/>
+            <button id="add-custom-mod-btn" class="btn btn-secondary">Add</button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-row">
+          <button id="calculate-btn" class="btn btn-primary">Calculate</button>
+          <button id="clear-btn" class="btn btn-secondary">Clear</button>
+        </div>
+
+      </section>
+
+      <!-- RESULTS -->
+      <section id="results-section" class="hidden">
+
+        <!-- Display Options -->
+        <div class="display-options panel">
+          <span class="option-label">Display:</span>
+          <label class="check-label"><input type="radio" name="display-mode" value="same" checked/> Same page</label>
+          <label class="check-label"><input type="radio" name="display-mode" value="separate"/> Separate pages (print)</label>
+          <div class="export-btns">
+            <button id="export-pdf-btn" class="btn btn-secondary">🖨 Export PDF</button>
+            <button id="export-csv-btn" class="btn btn-secondary">📊 Export CSV</button>
+          </div>
+        </div>
+
+        <!-- Precursor Table -->
+        <section id="precursor-section" class="panel result-panel">
+          <h2>Precursor Masses</h2>
+          <div id="precursor-sequence-display" class="sequence-display"></div>
+          <div id="precursor-table-container"></div>
+        </section>
+
+        <!-- Page Break (for separate mode) -->
+        <div id="page-break" class="page-break hidden"></div>
+
+        <!-- Fragment Table -->
+        <section id="fragment-section" class="panel result-panel">
+          <h2>Fragment Ion Masses</h2>
+          <div id="fragment-sequence-display" class="sequence-display"></div>
+          <div id="fragment-table-container" class="table-scroll"></div>
+        </section>
+
+      </section>
+    </main>
+
+    <footer>
+      <p>Peptide Fragment Calculator &mdash; Built for Mass Spectrometry</p>
+    </footer>
+  </div>
+
+  <script src="calculator.js"></script>
 </body>
-
 </html>
